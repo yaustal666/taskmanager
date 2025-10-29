@@ -98,7 +98,7 @@ export const deleteProject = db.prepare(`
 `);
 
 export const getAllUserProjects = db.prepare(`
-    SELECT p.name as name, p.description as description, p.is_public as is_public, p.created_by as created_by 
+    SELECT p.id as id, p.name as name, p.description as description, p.is_public as is_public, p.created_by as created_by 
     FROM projects p
     JOIN project_members pm
     ON pm.project_id = p.id

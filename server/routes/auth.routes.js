@@ -17,7 +17,7 @@ authRouter.post("/api/register", async (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    if (password.lenght < 4) {
+    if (password.length < 4) {
         return res.status(400).json({ error: 'Password must contain at least 4 characters' });
     }
 
@@ -29,7 +29,7 @@ authRouter.post("/api/register", async (req, res) => {
 
         const passwordHash = await argon2.hash(password);
 
-        await addUser.get(username, email, passwordHash);
+        await addUser.run(username, email, passwordHash);
         const newUser = await getUserByEmail.get(email);
         const token = jwt.sign(
             {
@@ -60,7 +60,7 @@ authRouter.post("/api/login", async (req, res) => {
         return res.status(400).json({ error: 'Email and password must be provided' });
     }
 
-    if (!validate_async(email)) {
+    if (!isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
@@ -89,7 +89,12 @@ authRouter.post("/api/login", async (req, res) => {
 
         res.json({
             message: 'Login successful',
-            token
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
         });
 
     } catch (error) {

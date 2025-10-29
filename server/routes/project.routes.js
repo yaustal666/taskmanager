@@ -4,13 +4,12 @@ const projectRouter = express.Router();
 import { getAllUserProjects, createProject, 
     deleteProjectMember, updateProjectMemberRole, 
     addProjectMember, roles, getUserRoleForProject, 
-    updateProject, deleteProject, getUserByEmail } from '../database.js'
+    updateProject, deleteProject, getUserByEmail, getAllProjectMembers } from '../database.js'
 import {authenticate} from '../middlewares.js'
 
 projectRouter.post("/api/create-project", authenticate, async (req, res) => {
     const { name, description, is_public = false } = req.body;
 
-    console.log("Create project")
     if (!name || name.trim() === '') {
         return res.status(400).json({ error: 'Project name is required' });
     }
@@ -49,28 +48,31 @@ projectRouter.put("/api/update-project/:id", authenticate, async (req, res) => {
 
     const role = await getUserRoleForProject.get(projectId, userId)
 
-    if (role > roles.admin) {
+    console.log(role, roles.admin)
+    if (role.role > roles.admin) {
         return res.status(403).json({ error: 'Permission denied' });
     }
 
-    if (role > roles.owner && is_public === false) {
+    if (role.role > roles.owner && is_public === false) {
         return res.status(403).json({ error: 'Permission denied' });
     }
 
-    await updateProject(name, description, is_public, projectId);
+    await updateProject.run(name, description, is_public, projectId);
+    res.json({ message: 'Project updated' });
 })
 
-projectRouter.delete("/api/delete-project", authenticate, async (req, res) => {
+projectRouter.delete("/api/delete-project/:id", authenticate, async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
     const role = await getUserRoleForProject.get(projectId, userId)
 
-    if (role > roles.owner) {
+    if (!role || role.role > roles.owner) {
         return res.status(403).json({ error: 'Permission denied' });
     }
 
-    deleteProject(projectId);
+    deleteProject.run(projectId);
+    res.json({ message: 'Project deleted' });
 })
 
 projectRouter.post("/api/add-project-member/:id", authenticate, async (req, res) => {
@@ -81,7 +83,7 @@ projectRouter.post("/api/add-project-member/:id", authenticate, async (req, res)
 
     const role = await getUserRoleForProject.get(projectId, userId)
 
-    if (role >= desiredMemberRole) {
+    if (!role || role.role >= desiredMemberRole) {
         return res.status(403).json({ error: 'Permission denied' });
     }
 
@@ -90,14 +92,15 @@ projectRouter.post("/api/add-project-member/:id", authenticate, async (req, res)
         return res.status(400).json({ error: 'Email not registered' });
     }
 
-    if (memberUser.name != name) {
+    if (memberUser.username != name) {
         return res.status(400).json({ error: 'Wrong member User name' });
     }
 
     await addProjectMember.run(projectId, memberUser.id, desiredMemberRole);
+    res.status(201).json({ message: 'Member added' });
 })
 
-projectRouter.put("/api/update-project-member-role/:id", async (req, res) => {
+projectRouter.put("/api/update-project-member-role/:id", authenticate, async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -105,15 +108,16 @@ projectRouter.put("/api/update-project-member-role/:id", async (req, res) => {
 
     const role = await getUserRoleForProject.get(projectId, userId)
 
-    if (role >= desiredMemberRole) {
+    if (!role || role.role >= desiredMemberRole) {
         return res.status(403).json({ error: 'Permission denied' });
     }
     
     const memberUser = await getUserByEmail.get(email)
-    await updateProjectMemberRole.run(projectId, memberUser.id, desiredMemberRole)
+    await updateProjectMemberRole.run(desiredMemberRole, projectId, memberUser.id)
+    res.json({ message: 'Member role updated' });
 })
 
-projectRouter.delete("/api/delete-project-member/:id", async (req, res) => {
+projectRouter.delete("/api/delete-project-member/:id", authenticate, async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -121,12 +125,13 @@ projectRouter.delete("/api/delete-project-member/:id", async (req, res) => {
 
     const role = await getUserRoleForProject.get(projectId, userId)
 
-    if (role >= desiredMemberRole) {
+    if (!role) {
         return res.status(403).json({ error: 'Permission denied' });
     }
 
     const memberUser = await getUserByEmail.get(email)
     await deleteProjectMember.run(projectId, memberUser.id)
+    res.json({ message: 'Member removed' });
 })
 
 projectRouter.get("/api/get-all-projects", authenticate, async (req, res) => {
@@ -134,15 +139,31 @@ projectRouter.get("/api/get-all-projects", authenticate, async (req, res) => {
     const projects = await getAllUserProjects.all(req.user.userId)
     console.log("NOW HERE")
 
-    res.status(201).json({projects: projects})
+    res.status(200).json({projects: projects})
 })
 
-projectRouter.get("/api/get-all-project-members", authenticate, async (req, res) => {
-
+projectRouter.get("/api/get-all-project-members/:id", authenticate, async (req, res) => {
+    const projectId = req.params.id;
+    const userId = req.user.userId;
+    const role = await getUserRoleForProject.get(projectId, userId)
+    if (!role) {
+        return res.status(403).json({ error: 'Permission denied' });
+    }
+    const members = await getAllProjectMembers.all(projectId);
+    res.json({ members });
 })
 
 projectRouter.get("/api/get-project/:id", authenticate, async (req, res) => {
-
+    const projectId = req.params.id;
+    const userId = req.user.userId;
+    const role = await getUserRoleForProject.get(projectId, userId)
+    if (!role) {
+        return res.status(403).json({ error: 'Permission denied' });
+    }
+    const projects = await getAllUserProjects.all(userId);
+    const project = projects.find(p => String(p.id) === String(projectId));
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    res.json({ project });
 })
 
 export default projectRouter;

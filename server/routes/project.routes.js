@@ -1,5 +1,5 @@
 import router from './router'
-import { getAllUserProjects, createProject, addProjectMember, roles } from '../database'
+import { getAllUserProjects, createProject, addProjectMember, roles, getUserRoleForProject } from '../database'
 import authenticate from '../middlewares'
 
 router.post("/api/new-project", authenticate, async (req, res) => {
@@ -35,8 +35,12 @@ router.post("/api/new-project", authenticate, async (req, res) => {
     }
 })
 
-router.put("/api/update-project", authenticate, async (req, res) => {
+router.put("/api/update-project/:id", authenticate, async (req, res) => {
+    const projectId = req.params.id
     const { name, description, is_public = false } = req.body;
+    const userId = req.user.userId
+
+    const role = await getUserRoleForProject.get(projectId, userId)
 })
 
 router.delete("/api/delete-project", authenticate, async (req, res) => {

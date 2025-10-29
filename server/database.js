@@ -17,14 +17,6 @@ db.exec(`
 `);
 
 db.exec(`
-    CREATE TABLE IF NOT EXISTS roles (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name VARCHAR(50) NOT NULL UNIQUE,
-        permissions TEXT
-    )
-`);
-
-db.exec(`
     CREATE TABLE IF NOT EXISTS projects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name VARCHAR(100) NOT NULL,
@@ -42,11 +34,10 @@ db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         project_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
-        role_id INTEGER NOT NULL,
+        role INTEGER NOT NULL CHECK(role >= 1 AND role <= 4),
         
         FOREIGN KEY (project_id) REFERENCES projects(id),
         FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (role_id) REFERENCES project_roles(id),
         UNIQUE(project_id, user_id)
     )
 `);
@@ -98,6 +89,17 @@ export const getAllUserProjects = db.prepare(`
 export const addProjectMember = db.prepare(`
     INSERT INTO project_members (project_id, user_id, role_id) 
     VALUES (?, ?, ?)
+`);
+
+export const getUserRoleForProject = db.prepare(`
+    SELECT role FROM project_members
+    WHERE project_id = ? 
+    AND user_id = ?
+`);
+
+export const deleteProject = db.prepare(`
+    DELETE FROM projects 
+    WHERE id = ?
 `);
 
 export default db;

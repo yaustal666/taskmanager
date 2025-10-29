@@ -1,18 +1,13 @@
-export const ProjectCard = ({ project, onClick }) => {
-  const getRoleName = (role) => {
-    const roles = { 1: 'Owner', 2: 'Admin', 3: 'Member', 4: 'Viewer' };
-    return roles[role] || 'Unknown';
-  };
+import './ProjectCard.css'
 
+export const ProjectCard = ({ project, onClick }) => {
   return (
     <div className="project-card" onClick={onClick}>
+      <h2>Project</h2>
       <h4>{project.name}</h4>
-      <p>{project.description || 'No description'}</p>
       <div className="project-meta">
-        <span className={`role role-${project.user_role}`}>
-          {getRoleName(project.user_role)}
-        </span>
-        {project.is_public && <span className="public-badge">Public</span>}
+      <p>Owner: {project.created_by}</p>
+      {project.is_public && <span className="public-badge">Public</span>}
       </div>
     </div>
   );

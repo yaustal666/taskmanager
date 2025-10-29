@@ -130,7 +130,10 @@ projectRouter.delete("/api/delete-project-member/:id", async (req, res) => {
 })
 
 projectRouter.get("/api/get-all-projects", authenticate, async (req, res) => {
+    console.log("HERE")
     const projects = await getAllUserProjects.all(req.user.userId)
+    console.log("NOW HERE")
+
     res.status(201).json({projects: projects})
 })
 

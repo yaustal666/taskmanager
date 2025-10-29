@@ -5,6 +5,8 @@ import Login from './components/Login/Login'
 import MainPage from './components/MainPage/MainPage'
 
 import './App.css'
+import { AddProject } from './components/Project/AddProject'
+import { AddTask } from './components/Tasks/AddTask'
 
 function App() {
 
@@ -14,6 +16,8 @@ function App() {
         <div className='main-page-wrapper'>
             <Routes>
               <Route path='/' element={<MainPage />} />
+              <Route path='/add-project' element={<AddProject></AddProject>}/>
+              <Route path='/add-task' element={<AddTask></AddTask>}/>
               <Route path='/register' element={<Register />} />
               <Route path='/login' element={<Login />} />
             </Routes>

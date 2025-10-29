@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
-export const AddProject = ({ onProjectAdded }) => {
-    const [isOpen, setIsOpen] = useState(false);
+export const AddProject = () => {
     const [formData, setFormData] = useState({ name: '', description: '' });
     const [ isPublic, setIsPublic ] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,20 +26,10 @@ export const AddProject = ({ onProjectAdded }) => {
                 is_public: isPublic
             })
 
-            setFormData({ name: '', description: '', is_public: false });
-            setIsOpen(false);
-            onProjectAdded();
+            navigate('/')
         } catch (error) {
         }
     };
-
-    if (!isOpen) {
-        return (
-            <button onClick={() => setIsOpen(true)} className="add-button">
-                + Add Project
-            </button>
-        );
-    }
 
     return (
         <div className="auth-container">
@@ -59,7 +49,7 @@ export const AddProject = ({ onProjectAdded }) => {
 
                     <div className="form-group">
                         <label className="form-group-label">Project Description:</label>
-                        <input className="form-group-input"
+                        <textarea className="form-group-input"
                             type="text"
                             name="description"
                             value={formData.description}

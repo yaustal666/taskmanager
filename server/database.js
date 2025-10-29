@@ -24,7 +24,7 @@ db.exec(`
         is_public BOOLEAN DEFAULT FALSE,
         created_by INTEGER NOT NULL,
 
-        FOREIGN KEY (created_by) REFERENCES users(id)
+        FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
     )
 `);
 
@@ -36,8 +36,8 @@ db.exec(`
         user_id INTEGER NOT NULL,
         role INTEGER NOT NULL CHECK(role >= 1 AND role <= 4),
         
-        FOREIGN KEY (project_id) REFERENCES projects(id),
-        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         UNIQUE(project_id, user_id)
     )
 `);
@@ -55,8 +55,8 @@ db.exec(`
         parent_task_id INTEGER,
         created_by INTEGER NOT NULL,
 
-        FOREIGN KEY (project_id) REFERENCES projects(id),
-        FOREIGN KEY (parent_task_id) REFERENCES tasks(id),
+        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+        FOREIGN KEY (parent_task_id) REFERENCES tasks(id) ON DELETE CASCADE,
         FOREIGN KEY (created_by) REFERENCES users(id)
     )
 `);
@@ -81,25 +81,46 @@ export const createProject = db.prepare(`
     VALUES (?, ?, ?, ?)
 `);
 
+export const updateProject = db.prepare(`
+    UPDATE projects 
+    SET name = ?, 
+    description = ?, 
+    is_public = ? 
+    WHERE id = ?
+`);
+
+export const deleteProject = db.prepare(`
+    DELETE FROM projects 
+    WHERE id = ?
+`);
+
 export const getAllUserProjects = db.prepare(`
     SELECT *
     FROM projects WHERE created_by = ?
 `);
 
 export const addProjectMember = db.prepare(`
-    INSERT INTO project_members (project_id, user_id, role_id) 
+    INSERT INTO project_members (project_id, user_id, role) 
     VALUES (?, ?, ?)
 `);
+
+export const updateProjectMemberRole = db.prepare(`
+    UPDATE project_members 
+    SET role = ?
+    WHERE project_id = ?
+    AND user_id = ?
+`);
+
+export const deleteProjectMember = db.prepare(`
+    DELETE FROM project_members 
+    WHERE project_id = ?
+    AND user_id = ?
+`)
 
 export const getUserRoleForProject = db.prepare(`
     SELECT role FROM project_members
     WHERE project_id = ? 
     AND user_id = ?
-`);
-
-export const deleteProject = db.prepare(`
-    DELETE FROM projects 
-    WHERE id = ?
 `);
 
 export default db;

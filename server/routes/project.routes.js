@@ -121,3 +121,15 @@ router.delete("/api/delete-project-member/:id", async (req, res) => {
     const memberUser = await getUserByEmail.get(email)
     await deleteProjectMember.run(projectId, memberUser.id)
 })
+
+router.get("/api/get-all-projects", authenticate, async (req, res) => {
+
+})
+
+router.get("/api/get-all-project-members", authenticate, async (req, res) => {
+
+})
+
+router.get("/api/get-project/:id", authenticate, async (req, res) => {
+
+})

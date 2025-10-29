@@ -4,16 +4,17 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --env-file=.env index.js"
   },
   "dependencies": {
     "argon2": "^0.44.0",
-    "email-validator": "^2.0.4",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "validator": "^13.15.20"
   }
 }

@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 
 const db = new DatabaseSync('./database.db');
-const roles = {
+export const roles = {
     owner: 1,
     admin: 2,
     member: 3
@@ -12,7 +12,7 @@ db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username VARCHAR(50) UNIQUE NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
+        password_hash VARCHAR(255) NOT NULL
     )
 `);
 
@@ -132,7 +132,7 @@ export const getUserRoleForProject = db.prepare(`
 `);
 
 export const getAllProjectMembers = db.prepare(`
-    SELECT u.name as name, u.email as email, pm.role as role 
+    SELECT u.username as name, u.email as email, pm.role as role 
     FROM project_members pm
     JOIN users u ON pm.user_id = u.id
     WHERE project_id = ? 
@@ -181,14 +181,13 @@ export const getSubtasks = db.prepare(`
 export const updateTask = db.prepare(`
     UPDATE tasks 
     SET title = ?, description = ?, due_date = ?, priority = ?, 
-        status = ?, color = ?, project_id = ?, updated_at = CURRENT_TIMESTAMP
+        status = ?, color = ?, project_id = ?
     WHERE id = ?
 `)
 
 export const updateTaskStatus = db.prepare(`
     UPDATE tasks 
-    SET status = ?, 
-    updated_at = CURRENT_TIMESTAMP 
+    SET status = ? 
     WHERE id = ?
 `)
 

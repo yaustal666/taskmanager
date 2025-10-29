@@ -1,10 +1,16 @@
-import router from './router'
-import { getAllUserProjects, createProject, deleteProjectMember, updateProjectMemberRole, addProjectMember, roles, getUserRoleForProject, updateProject, deleteProject, getUserByEmail } from '../database'
-import authenticate from '../middlewares'
+import express from 'express'
+const projectRouter = express.Router();
 
-router.post("/api/create-project", authenticate, async (req, res) => {
+import { getAllUserProjects, createProject, 
+    deleteProjectMember, updateProjectMemberRole, 
+    addProjectMember, roles, getUserRoleForProject, 
+    updateProject, deleteProject, getUserByEmail } from '../database.js'
+import {authenticate} from '../middlewares.js'
+
+projectRouter.post("/api/create-project", authenticate, async (req, res) => {
     const { name, description, is_public = false } = req.body;
 
+    console.log("Create project")
     if (!name || name.trim() === '') {
         return res.status(400).json({ error: 'Project name is required' });
     }
@@ -23,8 +29,9 @@ router.post("/api/create-project", authenticate, async (req, res) => {
             return res.status(400).json({ error: 'You already have a project with this name' });
         }
 
-        project = await createProject.run(name.trum(), description, is_public, req.user.userId)
-        await addProjectMember.run(project.id, req.user.userId, roles.owner);
+        console.log(name, description, is_public, req.user.userId)
+        const project = await createProject.run(name.trim(), description, is_public, req.user.userId)
+        await addProjectMember.run(project.lastInsertRowid, req.user.userId, roles.owner);
 
         res.status(201).json({
             message: 'Project created successfully'
@@ -35,7 +42,7 @@ router.post("/api/create-project", authenticate, async (req, res) => {
     }
 })
 
-router.put("/api/update-project/:id", authenticate, async (req, res) => {
+projectRouter.put("/api/update-project/:id", authenticate, async (req, res) => {
     const projectId = req.params.id
     const { name, description, is_public } = req.body;
     const userId = req.user.userId
@@ -53,7 +60,7 @@ router.put("/api/update-project/:id", authenticate, async (req, res) => {
     await updateProject(name, description, is_public, projectId);
 })
 
-router.delete("/api/delete-project", authenticate, async (req, res) => {
+projectRouter.delete("/api/delete-project", authenticate, async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -66,7 +73,7 @@ router.delete("/api/delete-project", authenticate, async (req, res) => {
     deleteProject(projectId);
 })
 
-router.post("/api/add-project-member/:id", authenticate, async (req, res) => {
+projectRouter.post("/api/add-project-member/:id", authenticate, async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -90,7 +97,7 @@ router.post("/api/add-project-member/:id", authenticate, async (req, res) => {
     await addProjectMember.run(projectId, memberUser.id, desiredMemberRole);
 })
 
-router.put("/api/update-project-member-role/:id", async (req, res) => {
+projectRouter.put("/api/update-project-member-role/:id", async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -106,7 +113,7 @@ router.put("/api/update-project-member-role/:id", async (req, res) => {
     await updateProjectMemberRole.run(projectId, memberUser.id, desiredMemberRole)
 })
 
-router.delete("/api/delete-project-member/:id", async (req, res) => {
+projectRouter.delete("/api/delete-project-member/:id", async (req, res) => {
     const projectId = req.params.id
     const userId = req.user.userId
 
@@ -122,14 +129,17 @@ router.delete("/api/delete-project-member/:id", async (req, res) => {
     await deleteProjectMember.run(projectId, memberUser.id)
 })
 
-router.get("/api/get-all-projects", authenticate, async (req, res) => {
+projectRouter.get("/api/get-all-projects", authenticate, async (req, res) => {
+    const projects = await getAllUserProjects.all(req.user.userId)
+    res.status(201).json({projects: projects})
+})
+
+projectRouter.get("/api/get-all-project-members", authenticate, async (req, res) => {
 
 })
 
-router.get("/api/get-all-project-members", authenticate, async (req, res) => {
+projectRouter.get("/api/get-project/:id", authenticate, async (req, res) => {
 
 })
 
-router.get("/api/get-project/:id", authenticate, async (req, res) => {
-
-})
+export default projectRouter;

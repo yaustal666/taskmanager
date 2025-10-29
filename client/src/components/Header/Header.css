@@ -1,0 +1,37 @@
+.header {
+  display : flex;
+  padding: 1rem 2rem;
+  background: #00000000;
+}
+
+.header-content {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.header-btn {
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.header-btn:hover {
+  background: #5a6fd8;
+}
+
+.header-btn.logout {
+  background: #dc3545;
+}
+
+.header-btn.logout:hover {
+  background: #c82333;
+}

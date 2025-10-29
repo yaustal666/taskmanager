@@ -1,8 +1,11 @@
-import router from './router'
-import { getUserRoleForProject, createTask, getUserTasks, updateTask } from '../database'
-import authenticate from '../middlewares'
+import express from 'express'
+const taskRouter = express.Router();
 
-router.post("/api/create-task", authenticate, async (req, res) => {
+import { getUserRoleForProject, createTask, 
+    getUserTasks, updateTask } from '../database.js'
+import {authenticate} from '../middlewares.js'
+
+taskRouter.post("/api/create-task", authenticate, async (req, res) => {
     const { title, description, due_date, priority = 1, status = 'todo',
         color = '#FFFFFF', project_id, parent_task_id } = req.body
 
@@ -20,7 +23,7 @@ router.post("/api/create-task", authenticate, async (req, res) => {
     }
 })
 
-router.get("/api/get-tasks", authenticate, async (req, res) => {
+taskRouter.get("/api/get-tasks", authenticate, async (req, res) => {
     try {
         const tasks = await getUserTasks.all(req.user.userId, req.user.userId)
     } catch (error) {
@@ -28,7 +31,7 @@ router.get("/api/get-tasks", authenticate, async (req, res) => {
     }
 })
 
-router.put("/api/update-task/:id", authenticate, async (req, res) => {
+taskRouter.put("/api/update-task/:id", authenticate, async (req, res) => {
     const taskId = req.params.id;
     const { title, description, due_date, priority, status, color, project_id } = req.body;
 
@@ -41,3 +44,5 @@ router.put("/api/update-task/:id", authenticate, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 })
+
+export default taskRouter;

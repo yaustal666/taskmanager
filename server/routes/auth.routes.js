@@ -1,18 +1,19 @@
-import router from './router'
+import express from 'express'
+const authRouter = express.Router();
+
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
-import { validate_async } from 'email-validator'
-import { getUserByEmail, addUser } from '../database'
+import isEmail from 'validator/lib/isEmail.js';
+import { getUserByEmail, addUser } from '../database.js'
 
-
-router.post("/api/register", async (req, res) => {
+authRouter.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({ error: 'Username, email and password must be provided' });
     }
 
-    if (!validate_async(email)) {
+    if (!isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
@@ -28,13 +29,13 @@ router.post("/api/register", async (req, res) => {
 
         const passwordHash = await argon2.hash(password);
 
-        await addUser.run(username, email, passwordHash);
-
+        await addUser.get(username, email, passwordHash);
+        const newUser = await getUserByEmail.get(email);
         const token = jwt.sign(
             {
                 user: username,
                 email: email,
-                userId: user.id
+                userId: newUser.id
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
@@ -42,7 +43,8 @@ router.post("/api/register", async (req, res) => {
 
         res.status(201).json({
             message: 'User created successfully',
-            token
+            token,
+            user: newUser
         });
 
     } catch (error) {
@@ -51,7 +53,7 @@ router.post("/api/register", async (req, res) => {
     }
 })
 
-router.post("/api/login", async (req, res) => {
+authRouter.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -96,5 +98,4 @@ router.post("/api/login", async (req, res) => {
     }
 })
 
-export default router;
-
+export default authRouter;

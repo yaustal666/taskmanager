@@ -1,10 +1,9 @@
-import express from 'express'
+import router from './router'
 import argon2 from 'argon2'
 import jwt from 'jsonwebtoken'
 import { validate_async } from 'email-validator'
-import { authenticate } from './middlewares.js'
+import { getUserByEmail, addUser } from '../database'
 
-const router = express.Router();
 
 router.post("/api/register", async (req, res) => {
     const { username, email, password } = req.body;
@@ -22,27 +21,20 @@ router.post("/api/register", async (req, res) => {
     }
 
     try {
-        // TODO - add needed query to database
-        const userName = await getUserByUsername.get(username);
+        const user = await getUserByEmail.get(email);
         if (user) {
-            return res.status(400).json({ error: 'Username already exists' });
-        }
-
-        // TODO - add needed query to database
-        const userEmail = await getUserByEmail.get(email);
-        if (existingUserByEmail) {
             return res.status(400).json({ error: 'Email already registered' });
         }
 
         const passwordHash = await argon2.hash(password);
 
-        // TODO - add needed query to database
-        await addUser.run(username, email, hash);
+        await addUser.run(username, email, passwordHash);
 
         const token = jwt.sign(
             {
                 user: username,
-                email: email
+                email: email,
+                userId: user.id
             },
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
@@ -70,22 +62,21 @@ router.post("/api/login", async (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
- try {
-        // TODO - add needed query to database
+    try {
         const user = await getUserByEmail.get(email);
-        
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const isPasswordCorrect = await argon2.verify(user.password_hash, password);
-        
+
         if (!isPasswordCorrect) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const token = jwt.sign(
-            { 
+            {
                 user: user.username,
                 email: user.email,
                 userId: user.id

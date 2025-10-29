@@ -1,6 +1,11 @@
-import {DatabaseSync} from 'node:sqlite';
+import { DatabaseSync } from 'node:sqlite';
 
 const db = new DatabaseSync('./database.db');
+const roles = {
+    owner: 1,
+    admin: 2,
+    member: 3
+}
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -12,25 +17,25 @@ db.exec(`
 `);
 
 db.exec(`
-    CREATE TABLE IF NOT EXISTS projects (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        is_public BOOLEAN DEFAULT FALSE,
-        created_by INTEGER NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-        FOREIGN KEY (created_by) REFERENCES users(id)
-    )
-`);
-
-db.exec(`
     CREATE TABLE IF NOT EXISTS roles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name VARCHAR(50) NOT NULL UNIQUE,
         permissions TEXT
     )
 `);
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS projects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        is_public BOOLEAN DEFAULT FALSE,
+        created_by INTEGER NOT NULL,
+
+        FOREIGN KEY (created_by) REFERENCES users(id)
+    )
+`);
+
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS project_members (
@@ -58,8 +63,6 @@ db.exec(`
         project_id INTEGER,
         parent_task_id INTEGER,
         created_by INTEGER NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
         FOREIGN KEY (project_id) REFERENCES projects(id),
         FOREIGN KEY (parent_task_id) REFERENCES tasks(id),
@@ -67,9 +70,34 @@ db.exec(`
     )
 `);
 
-export const getPlayerStats= db.prepare(`
-    SELECT wins, draws, losses FROM players
-    WHERE name = ?
+export const getUserByEmail = db.prepare(`
+    SELECT id, username, email, password_hash 
+    FROM users WHERE email = ?
+`);
+
+export const getUserByUsername = db.prepare(`
+    SELECT id, username, email, password_hash 
+    FROM users WHERE username = ?
+`);
+
+export const addUser = db.prepare(`
+    INSERT INTO users (username, email, password_hash) 
+    VALUES (?, ?, ?)
+`);
+
+export const createProject = db.prepare(`
+    INSERT INTO projects (name, description, is_public, created_by) 
+    VALUES (?, ?, ?, ?)
+`);
+
+export const getAllUserProjects = db.prepare(`
+    SELECT *
+    FROM projects WHERE created_by = ?
+`);
+
+export const addProjectMember = db.prepare(`
+    INSERT INTO project_members (project_id, user_id, role_id) 
+    VALUES (?, ?, ?)
 `);
 
 export default db;

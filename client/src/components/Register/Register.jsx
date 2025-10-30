@@ -85,7 +85,7 @@ function Register() {
                             value={formData.email}
                             onChange={handleChange}
                         />
-                        {errors.username && <p style={{ color: 'red' }}>{errors.email}</p>}
+                        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                     </div>
 
                     <div className="form-group">

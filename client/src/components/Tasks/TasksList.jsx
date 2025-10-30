@@ -1,6 +1,6 @@
 import { TaskCard } from "./TaskCard";
 
-export const TaskList = ({ tasks, onTaskClicked }) => {
+export const TaskList = ({ tasks, onTaskClick }) => {
   if (!tasks.length) {
     return (
       <div className="empty-state">
@@ -17,7 +17,7 @@ export const TaskList = ({ tasks, onTaskClicked }) => {
           <TaskCard 
             key={task.id} 
             task={task} 
-            onClick={() => onTaskClicked(task.id)}
+            onClick={() => onTaskClick(task.id)}
           />
         ))}
       </div>

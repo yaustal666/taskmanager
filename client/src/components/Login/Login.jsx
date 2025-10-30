@@ -26,7 +26,7 @@ function Login() {
 
     const validateForm = () => {
         let newErrors = {};
-        if (!formData.email) newErrors.username = 'Username is required';
+        if (!formData.email) newErrors.email = 'Email is required';
         if (!formData.password) newErrors.password = 'Password is required';
 
         setErrors(newErrors);
@@ -39,7 +39,7 @@ function Login() {
         if (validateForm()) {
 
             setLoading(true);
-            const responce = await login(formData.username, formData.password);
+            const responce = await login(formData.email, formData.password);
             if (responce.success) {
                 navigate('/');
             } else {
@@ -63,10 +63,10 @@ function Login() {
                         <input className="form-group-input"
                             type="text"
                             name="email"
-                            value={formData.username}
+                            value={formData.email}
                             onChange={handleChange}
                         />
-                        {errors.username && <p style={{ color: 'red' }}>{errors.username}</p>}
+                        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                     </div>
 
                     <div className="form-group">

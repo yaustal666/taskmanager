@@ -7,6 +7,9 @@ const Header = () => {
     return (
         <header className="header">
             <div className="header-content">
+                <div className="brand">
+                    <Link to="/" className="brand-link">Task Manager</Link>
+                </div>
                 <div className="header-buttons">
 
                     {user ? (

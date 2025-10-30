@@ -1,8 +1,55 @@
 .project-card {
     margin: 10px;
+    padding: 16px;
     display: flex;
-    gap: 10px;
-    background-color: #489fd1;
-    border-radius: 20px;
-    justify-content: space-around;
+    flex-direction: column;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.project-card h2 {
+    font-size: 13px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin: 0;
+}
+
+.project-card h4 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.project-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.public-badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #065f46;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+}
+
+.private-badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
 }

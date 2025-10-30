@@ -7,7 +7,11 @@ export const ProjectCard = ({ project, onClick }) => {
       <h4>{project.name}</h4>
       <div className="project-meta">
       <p>Owner: {project.created_by}</p>
-      {project.is_public && <span className="public-badge">Public</span>}
+      {project.is_public ? (
+        <span className="public-badge">Public</span>
+      ) : (
+        <span className="private-badge">Private</span>
+      )}
       </div>
     </div>
   );

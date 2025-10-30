@@ -166,7 +166,8 @@ export const getUserTasks = db.prepare(`
     FROM tasks t
     LEFT JOIN projects p ON t.project_id = p.id
     LEFT JOIN project_members pm ON p.id = pm.project_id
-    WHERE t.created_by = ? OR pm.user_id = ?
+    WHERE (t.created_by = ? OR pm.user_id = ?)
+    AND t.parent_task_id IS NULL
     ORDER BY t.priority DESC, t.due_date ASC    
 `)
 

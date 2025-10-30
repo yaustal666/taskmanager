@@ -7,7 +7,14 @@
 .header-content {
   display: flex;
   width: 100%;
-  justify-content: end;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-link {
+  color: #111827;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .header-buttons {

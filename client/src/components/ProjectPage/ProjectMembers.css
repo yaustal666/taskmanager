@@ -1,0 +1,135 @@
+.members-card {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.members-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #e6e6e6;
+}
+.tag.error {
+  color: #b42318;
+  background: #fee4e2;
+  border-color: #fecdca;
+}
+.tag.muted {
+  color: #667085;
+  background: #f2f4f7;
+}
+
+.members-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 8px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+}
+
+.member-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.meta .name {
+  font-weight: 600;
+}
+.meta .email {
+  color: #667085;
+  font-size: 13px;
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+}
+
+.btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  cursor: pointer;
+}
+.btn.primary {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+.btn.danger {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.member-empty {
+  text-align: center;
+  padding: 12px;
+  color: #667085;
+}
+
+.invite-block {
+  margin-top: 16px;
+  border-top: 1px dashed #ececec;
+  padding-top: 12px;
+}
+
+.invite-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 160px auto;
+  gap: 8px;
+}
+
+.input {
+  padding: 8px 10px;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+}
+
+
